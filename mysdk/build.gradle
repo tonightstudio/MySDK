@@ -1,0 +1,73 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "26.0.1"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.1"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.3.1'
+}
+
+
+//---------maven-release-aar.gradle---------
+// 1.maven-插件
+apply plugin: 'maven'
+
+// 2.maven-信息
+ext {
+    /**
+     * 示例：
+     * compile      'com.android.support:appcompat-v7:25.3.1'
+     * groupId      com.android.support
+     * artifactId   appcompat-v7
+     * version      25.3.1
+     */
+    // ext is a gradle closure allowing the declaration of global properties
+    PUBLISH_GROUP_ID = 'com.tonightstudio.sdktestdemo'
+    PUBLISH_ARTIFACT_ID = 'MyUtilsSdk'
+    PUBLISH_VERSION = android.defaultConfig.versionName
+
+}
+
+// 3.maven-输出路径
+uploadArchives {
+    repositories.mavenDeployer {
+        //这里就是最后输出地址，在自己电脑上新建个文件夹，把文件夹路径粘贴在此
+        //例子：C:\Users\Programmer1\Desktop
+        //就是把maven的输出路径定在桌面
+        //注意”file://“ + 路径，有三个斜杠，别漏了
+        repository(url: "file://C:\\Users\\Programmer1\\Desktop")
+
+        pom.project {
+            groupId project.PUBLISH_GROUP_ID
+            artifactId project.PUBLISH_ARTIFACT_ID
+            version project.PUBLISH_VERSION
+        }
+    }
+}
+
+//以下代码会生成jar包源文件，如果是不开源码，请不要输入这段
+//aar包内包含注释
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+
+artifacts {
+    archives androidSourcesJar
+}

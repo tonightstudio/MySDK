@@ -16,7 +16,5 @@
 .idea/runConfigurations.xml
 .idea/vcs.xml
 app/libs/
-app/src/main/res/drawable/
 gradle/
 mysdk/libs/
-mysdk/src/main/res/drawable/
