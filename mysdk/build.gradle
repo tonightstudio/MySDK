@@ -33,6 +33,7 @@ ext {
     /**
      * 示例：
      * compile      'com.android.support:appcompat-v7:25.3.1'
+     *
      * groupId      com.android.support
      * artifactId   appcompat-v7
      * version      25.3.1
@@ -48,10 +49,10 @@ ext {
 uploadArchives {
     repositories.mavenDeployer {
         //这里就是最后输出地址，在自己电脑上新建个文件夹，把文件夹路径粘贴在此
-        //例子：C:\Users\Programmer1\Desktop
+        //例子：C:\Users\Programmer1\Desktop\SDKTestDemo
         //就是把maven的输出路径定在桌面
         //注意”file://“ + 路径，有三个斜杠，别漏了
-        repository(url: "file://C:\\Users\\Programmer1\\Desktop")
+        repository(url: "file://C:\\Users\\Programmer1\\Desktop\\SDKTestDemo")
 
         pom.project {
             groupId project.PUBLISH_GROUP_ID
