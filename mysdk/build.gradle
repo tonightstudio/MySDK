@@ -8,7 +8,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "2.3"
     }
     buildTypes {
         release {
@@ -19,8 +19,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.github.zhaokaiqiang.klog:library:1.6.0'
+    implementation 'com.android.support:appcompat-v7:25.3.1'
 }
 
 //---------maven-release-aar.gradle---------
@@ -39,7 +40,7 @@ ext {
      */
     // ext is a gradle closure allowing the declaration of global properties
     PUBLISH_GROUP_ID = 'group.tonight'//域名
-    PUBLISH_ARTIFACT_ID = 'CommonUtils'//自开发sdk名
+    PUBLISH_ARTIFACT_ID = 'commonutils'//自开发sdk名
     PUBLISH_VERSION = android.defaultConfig.versionName //自开发sdk版本号
 
 }

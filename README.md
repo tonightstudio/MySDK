@@ -4,7 +4,7 @@
 
     repositories {
         maven { 
-            //指定Github路径
+            //指定Github上SDK项目的路径
             url "https://github.com/tonightstudio/MySDK/raw/master" 
         } 
     }
