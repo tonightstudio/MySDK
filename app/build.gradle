@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "26.0.1"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.tonightstudio.sdktestdemo"
         minSdkVersion 16
@@ -19,7 +19,7 @@ android {
 }
 
 repositories {
-    maven { url "https://github.com/tonightstudio/MyUtilsSdk/raw/master" } //指定Github路径
+    maven { url "https://github.com/tonightstudio/MySDK/raw/master" } //指定Github上SDK项目的路径
 }
 
 dependencies {
@@ -28,5 +28,5 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
 
-    compile 'com.tonightstudio.sdktestdemo:MyUtilsSdk:1.0'
+    compile 'com.tonightstudio.sdktestdemo:MyUtilsSdk:1.1'
 }
