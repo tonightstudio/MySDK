@@ -9,5 +9,5 @@
         } 
     }
     dependencies {
-        compile 'group.tonight:CommonUtils:+'
+        compile 'com.github.tonightstudio:commonutils:1.0'
     }
