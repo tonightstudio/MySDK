@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    buildToolsVersion "26.0.1"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 22
         versionCode 1
-        versionName "2.4"
+        versionName "1.0"
     }
     buildTypes {
         release {
@@ -19,10 +19,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.github.zhaokaiqiang.klog:library:1.6.0'
-    implementation 'com.android.support:appcompat-v7:25.3.1'
 }
+
 
 //---------maven-release-aar.gradle---------
 // 1.maven-插件
@@ -39,9 +40,9 @@ ext {
      * version      25.3.1
      */
     // ext is a gradle closure allowing the declaration of global properties
-    PUBLISH_GROUP_ID = 'group.tonight'//域名
-    PUBLISH_ARTIFACT_ID = 'mycommonutils'//自开发sdk名
-    PUBLISH_VERSION = android.defaultConfig.versionName //自开发sdk版本号
+    PUBLISH_GROUP_ID = 'com.tonightstudio.sdktestdemo'
+    PUBLISH_ARTIFACT_ID = 'MyUtilsSdk'
+    PUBLISH_VERSION = android.defaultConfig.versionName
 
 }
 
@@ -49,12 +50,10 @@ ext {
 uploadArchives {
     repositories.mavenDeployer {
         //这里就是最后输出地址，在自己电脑上新建个文件夹，把文件夹路径粘贴在此
-        //例子：C:\Users\Programmer1\Desktop\SDKTestDemo，绝对路径
+        //例子：C:\Users\Programmer1\Desktop\SDKTestDemo
         //就是把maven的输出路径定在桌面
         //注意”file://“ + 路径，有三个斜杠，别漏了
-//        repository(url: "file://C:\\Users\\Programmer1\\Desktop\\SDKTestDemo")
-        //file://temp这个代表的是在项目根目录下创建一个temp文件夹，相对路径
-        repository(url: "file://temp")//将要发布的内容暂时生成在这个临时文件夹中
+        repository(url: "file://temp")
 
         pom.project {
             groupId project.PUBLISH_GROUP_ID

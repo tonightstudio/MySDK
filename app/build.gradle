@@ -19,11 +19,15 @@ android {
 }
 
 repositories {
-    maven { url 'https://github.com/tonightstudio/MySDK/raw/master' }
+    maven {
+        //指定Github上SDK项目的路径
+        url "https://github.com/tonightstudio/MySDK/raw/master"
+    }
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-//    compile 'group.tonight:mycommonutils:2.3'
+//    compile 'group.tonight:MyUtilsSdk:2.4'
+    compile 'com.tonightstudio.sdktestdemo:MyUtilsSdk:1.0'
 }
