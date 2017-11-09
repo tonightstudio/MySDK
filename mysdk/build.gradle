@@ -6,9 +6,9 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 25
         versionCode 1
-        versionName "1.2"
+        versionName "1.0"
     }
     buildTypes {
         release {
@@ -39,9 +39,9 @@ ext {
      * version      25.3.1
      */
     // ext is a gradle closure allowing the declaration of global properties
-    PUBLISH_GROUP_ID = 'com.tonightstudio.sdktestdemo'
-    PUBLISH_ARTIFACT_ID = 'MyUtilsSdk'
-    PUBLISH_VERSION = android.defaultConfig.versionName
+    PUBLISH_GROUP_ID = 'group.tonight'//域名
+    PUBLISH_ARTIFACT_ID = 'CommonUtils'//自开发sdk名
+    PUBLISH_VERSION = android.defaultConfig.versionName //自开发sdk版本号
 
 }
 

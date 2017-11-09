@@ -28,5 +28,5 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
 
-    compile 'com.tonightstudio.sdktestdemo:MyUtilsSdk:1.1'
+//    compile 'group.tonight:CommonUtils:1.3'
 }
