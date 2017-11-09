@@ -8,7 +8,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "1.5"
     }
     buildTypes {
         release {
@@ -40,7 +40,7 @@ ext {
      * version      25.3.1
      */
     // ext is a gradle closure allowing the declaration of global properties
-    PUBLISH_GROUP_ID = 'com.tonightstudio.sdktestdemo'
+    PUBLISH_GROUP_ID = 'com.group.tonight'
     PUBLISH_ARTIFACT_ID = 'MyUtilsSdk'
     PUBLISH_VERSION = android.defaultConfig.versionName
 
