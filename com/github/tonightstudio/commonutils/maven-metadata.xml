@@ -9,4 +9,11 @@
     </versions>
     <lastUpdated>20171109035729</lastUpdated>
   </versioning>
+  <versioning>
+    <release>1.1</release>
+    <versions>
+      <version>1.1</version>
+    </versions>
+    <lastUpdated>20171109040012</lastUpdated>
+  </versioning>
 </metadata>

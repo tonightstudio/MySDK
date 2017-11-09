@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.tonightstudio.mysdk.ToastUtils;
+import group.tonight.ToastUtils;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
