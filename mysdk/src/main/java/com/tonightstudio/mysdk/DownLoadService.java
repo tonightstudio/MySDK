@@ -1,4 +1,4 @@
-package group.tonight;
+package com.tonightstudio.mysdk;
 
 import android.app.DownloadManager;
 import android.app.Service;

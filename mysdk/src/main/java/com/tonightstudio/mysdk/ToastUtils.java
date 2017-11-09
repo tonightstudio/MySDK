@@ -1,4 +1,4 @@
-package group.tonight;
+package com.tonightstudio.mysdk;
 
 import android.content.Context;
 import android.widget.Toast;

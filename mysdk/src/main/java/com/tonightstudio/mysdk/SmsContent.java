@@ -1,4 +1,4 @@
-package group.tonight;
+package com.tonightstudio.mysdk;
 
 import android.app.Activity;
 import android.database.ContentObserver;
