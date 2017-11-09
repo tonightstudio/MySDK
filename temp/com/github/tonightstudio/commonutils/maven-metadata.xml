@@ -3,10 +3,12 @@
   <groupId>com.github.tonightstudio</groupId>
   <artifactId>commonutils</artifactId>
   <versioning>
-    <release>1.1</release>
+    <release>1.3</release>
     <versions>
       <version>1.1</version>
+      <version>1.2</version>
+      <version>1.3</version>
     </versions>
-    <lastUpdated>20171109040012</lastUpdated>
+    <lastUpdated>20171109043629</lastUpdated>
   </versioning>
 </metadata>
