@@ -26,9 +26,9 @@ repositories {
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.github.bumptech.glide:glide:4.3.1'
-    //    compile 'com.github.tonightstudio:commonutils:1.4'
+//    compile 'com.github.tonightstudio:commonutils:1.0'
     compile project(':mysdk')
 }

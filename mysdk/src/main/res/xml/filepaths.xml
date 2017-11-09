@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+/**
+ * Copyright (c) 2016, The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path
+        name="share_path"
+        path="/" />
+
+    <!--Glide默认缓存位置/data/data/com.aoemoji.keyboard/cache/image_manager_disk_cache/1fd46051791670d68e5cf8cc239b15a4ce31ef2c6494c1e5cbd2c622831db97b.0-->
+    <cache-path
+        name="gif_cache_share_path"
+        path="/" />
+    <!--
+    解决这个读取外置SD卡文件时出现的异常FileProvider相关 Failed to find configured root that contains，主要是android 6.0机器上会出现这个问题
+    java.lang.IllegalArgumentException: Failed to find configured root that contains /storage/emulated/0/-84513526/gifCache/sticker_-84513526_2130837846.gif
+    at android.support.v4.content.FileProvider$SimplePathStrategy.getUriForFile(FileProvider.java)
+	at android.support.v4.content.FileProvider.getUriForFile(FileProvider.java)
+	at com.emoji.panel.views.tabs.gif.ShareTask.onPostExecute(ShareTask.java)
+    -->
+    <root-path
+        name="root_path"
+        path="/" />
+</paths>
