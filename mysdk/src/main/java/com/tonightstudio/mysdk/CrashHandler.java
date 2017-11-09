@@ -5,8 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
-
-import com.socks.library.KLog;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,28 +13,39 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * 使用：
+ * CrashHandler.getInstance().init(this);
+ */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
-    public static final String TAG = "CrashHandler";
-    private long MAX_CRASH_FILE_SIZE = 500 * 1024;//最大日志量500KB
+    private static final String TAG = CrashHandler.class.getSimpleName();
+    private long MAX_CRASH_FILE_SIZE = 500 * 1024;//默认最大日志量500KB
 
     //系统默认的UncaughtException处理类   
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     //CrashHandler实例  
-    private static CrashHandler INSTANCE = new CrashHandler();
+    private static CrashHandler INSTANCE;
     //程序的Context对象  
     private Context mContext;
     //用来存储设备信息和异常信息  
-    private Map<String, String> infos = new HashMap<>();
+    private Map<String, String> mInfoList = new HashMap<>();
 
     //用于格式化日期,作为日志文件名的一部分
-    private DateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault());
+    private DateFormat mFormatter;//
+    private String mPackageName;
+    private String mCrashFileDir;//日志默认存储位置/storage/emulated/0/Android/data/<包名>/crash/
 
     /**
      * 保证只有一个CrashHandler实例
@@ -47,6 +57,13 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      * 获取CrashHandler实例 ,单例模式
      */
     public static CrashHandler getInstance() {
+        if (INSTANCE == null) {
+            synchronized (CrashHandler.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new CrashHandler();
+                }
+            }
+        }
         return INSTANCE;
     }
 
@@ -57,10 +74,16 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      */
     public void init(Context context) {
         mContext = context;
-        //获取系统默认的UncaughtException处理器  
+        mPackageName = context.getPackageName();
+        mFormatter = new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.getDefault());
+        //获取系统默认的UncaughtException处理器
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         //设置该CrashHandler为程序的默认处理器  
         Thread.setDefaultUncaughtExceptionHandler(this);
+
+//        String sdRootPath = Environment.getExternalStorageDirectory().getPath();
+//        mCrashFileDir = sdRootPath + "/Android/data/" + mPackageName + "/crash";
+        mCrashFileDir = FileUtils.getCrashLogDir(context);
     }
 
     /**
@@ -113,27 +136,27 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      *
      * @param ctx
      */
-    public void collectDeviceInfo(Context ctx) {
+    private void collectDeviceInfo(Context ctx) {
         try {
             PackageManager pm = ctx.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
+            PackageInfo pi = pm.getPackageInfo(mPackageName, PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null" : pi.versionName;
                 String versionCode = pi.versionCode + "";
-                infos.put("versionName", versionName);
-                infos.put("versionCode", versionCode);
+                mInfoList.put("versionName", versionName);
+                mInfoList.put("versionCode", versionCode);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            KLog.e("an error occured when collect package info", e);
+            System.out.println("an error occured when collect package info " + e);
         }
         Field[] fields = Build.class.getDeclaredFields();
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
-                infos.put(field.getName(), field.get(null).toString());
+                mInfoList.put(field.getName(), field.get(null).toString());
 //                KLog.e(field.getName() + " : " + field.get(null));
             } catch (Exception e) {
-                KLog.e("an error occured when collect crash info", e);
+                System.out.println("an error occured when collect crash info " + e);
             }
         }
     }
@@ -147,7 +170,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private String saveCrashInfo2File(Throwable ex) {
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> entry : infos.entrySet()) {
+        for (Map.Entry<String, String> entry : mInfoList.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             sb.append(key).append("=").append(value).append("\n");
@@ -165,35 +188,109 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         String result = writer.toString();
         sb.append(result);
         try {
-            long timestamp = System.currentTimeMillis();
-            String time = formatter.format(new Date());
-            String fileName = "crash-" + time + "-" + timestamp + ".log";
+            String time = mFormatter.format(new Date());
+            String fileName = "crash-" + time + ".log";
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-
-                String path = FileUtils.getCrashLogDir(mContext);
-                File dir = new File(path);
+                File dir = new File(mCrashFileDir);
                 if (!dir.exists()) {
                     boolean mkdirs = dir.mkdirs();
                 }
-//                ShareTask.deleteOldShareData(dir);//删除2小时前的日志
-                FileOutputStream fos = new FileOutputStream(path + fileName);
+                String crashFilePath = mCrashFileDir + File.separator + fileName;
+                System.out.println("崩溃日志路径：" + crashFilePath);
+                FileOutputStream fos = new FileOutputStream(crashFilePath);
                 fos.write(sb.toString().getBytes());
                 fos.close();
 
-//                long folderSize = FileTool.getFolderSize(dir);//205803
-//                String s = FileTool.convertFileSize(folderSize);//201KB
-//                KLog.e();
-//                while (FileTool.getFolderSize(dir) > MAX_CRASH_FILE_SIZE) {
-//                    FileTool.deleteOldestFile(dir);
-//                }
-//                long ddd = FileTool.getFolderSize(dir);//101738
-//                String sss = FileTool.convertFileSize(ddd);//99.35KB
-//                KLog.e();
+                List<File> fileList = Arrays.asList(dir.listFiles());
+                //将文件按最后一次修改时间排序，越早的越放List的前面
+                Collections.sort(fileList, new Comparator<File>() {
+                    @Override
+                    public int compare(File o1, File o2) {
+                        long l = o1.lastModified();
+                        long l1 = o2.lastModified();
+                        if (l > l1) {
+                            return 1;
+                        } else if (l < l1) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
+
+                int loopCount = 0;
+                long folderSize = getFolderSize(dir);
+                while (folderSize > MAX_CRASH_FILE_SIZE) {
+                    System.out.println("日志文件夹已大于最大存储日志量，开始删除早期日志");
+                    File file = fileList.get(loopCount);
+                    boolean delete = file.delete();
+                    loopCount++;
+                    folderSize = getFolderSize(dir);
+                    System.out.println("删除日志：" + delete + " 当前大小：" + getFormatSize(folderSize));
+                }
+                Log.i(TAG, "当前日志文件总大小: " + getFormatSize(folderSize));
             }
             return fileName;
         } catch (Exception e) {
-            KLog.e("an error occured while writing file...", e);
+            System.out.println("an error occured while writing file..." + e);
         }
         return null;
+    }
+
+    /**
+     * 格式化单位
+     *
+     * @param size
+     * @return
+     */
+    private String getFormatSize(double size) {
+        double kiloByte = size / 1024;
+        if (kiloByte < 1) {
+            return size + "Byte(s)";
+        }
+
+        double megaByte = kiloByte / 1024;
+        if (megaByte < 1) {
+            BigDecimal result1 = new BigDecimal(Double.toString(kiloByte));
+            return result1.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "KB";
+        }
+
+        double gigaByte = megaByte / 1024;
+        if (gigaByte < 1) {
+            BigDecimal result2 = new BigDecimal(Double.toString(megaByte));
+            return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
+        }
+
+        double teraBytes = gigaByte / 1024;
+        if (teraBytes < 1) {
+            BigDecimal result3 = new BigDecimal(Double.toString(gigaByte));
+            return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB";
+        }
+        BigDecimal result4 = new BigDecimal(teraBytes);
+        return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
+    }
+
+    /**
+     * 获取文件夹大小
+     *
+     * @param file File实例
+     * @return long
+     */
+    private long getFolderSize(java.io.File file) {
+
+        long size = 0;
+        try {
+            java.io.File[] fileList = file.listFiles();
+            for (File aFileList : fileList) {
+                if (aFileList.isDirectory()) {
+                    size = size + getFolderSize(aFileList);
+                } else {
+                    size = size + aFileList.length();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //return size/1048576;
+        return size;
     }
 }  

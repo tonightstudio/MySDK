@@ -1,25 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
     tools:context="com.tonightstudio.sdktestdemo.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/showToast"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="测试弹Toast"
-        android:textAllCaps="false" />
+        <ImageView
+            android:id="@+id/qrcodeIv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@mipmap/ic_launcher" />
 
-</android.support.constraint.ConstraintLayout>
+        <Button
+            android:id="@+id/showToast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试弹Toast"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/throwExpBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="手动抛异常" />
+
+        <Button
+            android:id="@+id/downloadBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载" />
+
+        <Button
+            android:id="@+id/testFileUtilsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试fileUtils" />
+
+        <Button
+            android:id="@+id/smsMonitorBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="短信监听者" />
+
+        <Button
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="分享图片" />
+    </LinearLayout>
+
+</ScrollView>

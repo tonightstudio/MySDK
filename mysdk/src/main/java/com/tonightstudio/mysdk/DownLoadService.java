@@ -14,29 +14,49 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
-
-import com.socks.library.KLog;
 
 import java.io.File;
 
 /**
  * 更新APP
+ *
+ * <uses-permission android:name="android.permission.INTERNET" />
+ * <service android:name=".DownLoadService" />
+ *
+ * 使用：
+ * String apkUrl = "https://apkegg.mumayi.com/cooperation/2017/08/25/0/1/mumayishichangMumayiMarket_V4.1_mumayi_8611e.apk";
+ * DownLoadService.start(this, apkUrl);
  */
 public class DownLoadService extends Service {
+    private static final String TAG = DownLoadService.class.getSimpleName();
 
     private DownloadManager manager;
     private DownloadCompleteReceiver receiver;
     private long mDownloadId;
+    private String mMimeType;
+
+    public static void start(Context context, String apkUrl) {
+        Intent service = new Intent(context, DownLoadService.class);
+        service.putExtra("apkUrl", apkUrl);
+        context.startService(service);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        String url = intent.getStringExtra("downloadurl");
+        String apkUrl = intent.getStringExtra("apkUrl");
+        String fileName = apkUrl.substring(apkUrl.lastIndexOf("/") + 1, apkUrl.length());
+        mMimeType = getMIMEType(apkUrl);
+
+
         manager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         receiver = new DownloadCompleteReceiver();
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(apkUrl));
+        request.setTitle(fileName);
+        request.setMimeType(mMimeType);
         mDownloadId = manager.enqueue(request);
         registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         return super.onStartCommand(intent, flags, startId);
@@ -63,7 +83,7 @@ public class DownLoadService extends Service {
             }
             if (action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
                 long downId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-                KLog.e("mDownloadId:" + mDownloadId + "，downId:" + downId);
+                Log.e(TAG, "mDownloadId:" + mDownloadId + "，downId:" + downId);
                 if (mDownloadId != downId) {
                     return;
                 }
@@ -81,7 +101,6 @@ public class DownLoadService extends Service {
                 DownLoadService.this.stopSelf();
             }
         }
-
     }
 
     public String getRealFilePath(Context context, Uri uri) {
@@ -110,16 +129,15 @@ public class DownLoadService extends Service {
     /**
      * 重点在这里
      */
-    public void openFile(File var0, Context var1) {
-        Intent var2 = new Intent();
+    public void openFile(File file, Context var1) {
+        Intent var2 = new Intent(Intent.ACTION_VIEW);
         var2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        var2.setAction(Intent.ACTION_VIEW);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Uri uriForFile = FileProvider.getUriForFile(var1, var1.getApplicationContext().getPackageName() + ".provider", var0);
+            Uri uriForFile = FileProvider.getUriForFile(var1, var1.getApplicationContext().getPackageName() + ".provider", file);
             var2.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             var2.setDataAndType(uriForFile, var1.getContentResolver().getType(uriForFile));
         } else {
-            var2.setDataAndType(Uri.fromFile(var0), getMIMEType(var0));
+            var2.setDataAndType(Uri.fromFile(file), mMimeType);//"application/vnd.android.package-archive"
         }
         try {
             var1.startActivity(var2);
@@ -129,11 +147,17 @@ public class DownLoadService extends Service {
         }
     }
 
-    public String getMIMEType(File var0) {
+    public static String getMIMEType(String apkUrl) {
+        String fileName = apkUrl.substring(apkUrl.lastIndexOf("/") + 1, apkUrl.length());
+        String var3 = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length()).toLowerCase();
+        String var1 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(var3);
+        return var1;
+    }
+
+    public static String getMIMEType(File var0) {
         String var2 = var0.getName();
         String var3 = var2.substring(var2.lastIndexOf(".") + 1, var2.length()).toLowerCase();
         String var1 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(var3);
         return var1;
     }
-
 }

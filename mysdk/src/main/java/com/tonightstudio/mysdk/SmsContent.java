@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  * Monitor sms database
- *
+ *  <uses-permission android:name="android.permission.READ_SMS" />
  * @author Jackie
  */
 public class SmsContent extends ContentObserver {
